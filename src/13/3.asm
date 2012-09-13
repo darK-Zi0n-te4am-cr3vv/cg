@@ -1,9 +1,9 @@
-include 'model.inc'
-include 'macro.inc'
+include model.inc
+include macro.inc
 
-include 'lib\cga.inc'
-include 'lib\sys.inc'
-include 'lib\kb.inc'
+include lib\cga.inc
+include lib\sys.inc
+include lib\kb.inc
 
 ; Разработать программу для этого же видеоадаптера для вывода на экран
 ; точки с координатами x = 113, y = 98, синего цвета. Значения
@@ -15,7 +15,7 @@ PX_Y		equ		98
 PX_COLOR	equ		CGA_CM_CYAN
 
 .data
-FatalMessage: db 'Fatal error, exiting$'
+FatalMessage db 'Fatal error, exiting$'
 
 .code
 
@@ -28,10 +28,10 @@ main:
 	invoke CGA_PutPixel, PX_X, PX_Y, PX_COLOR
 	
 	invoke KB_ReadKey
-	invoke DOS_Exit
+	invoke DOS_Exit, 0
 	
 fatal:
-	invoke DOS_Print, offset FatalMessage
-	invoke DOS_Exit
+	invoke DOS_Print, word ptr FatalMessage
+	invoke DOS_Exit, 0
 	
 end main

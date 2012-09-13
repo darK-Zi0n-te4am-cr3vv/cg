@@ -29,7 +29,8 @@ main:
 
 	mov di, PX_OFFSET
 
-	mov es:[di], PX_BYTE 
+	mov al, PX_BYTE
+	mov es:[di], al 
 
 	; wait keypress
 	mov ax, 00h
