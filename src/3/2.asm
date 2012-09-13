@@ -18,9 +18,9 @@ OUT  DX,AL          ;посылаем код цвета
 mov	ax, 0a000h
 mov es, ax				
 
-mov di, 05h
-
-mov es:[di], 0ffh 
+mov di, 05h			;для того, чтобы было видно
+					;что это была выведена именно
+mov es:[di], 0ffh	;вторая строка
 
 mov di, 55h
 
