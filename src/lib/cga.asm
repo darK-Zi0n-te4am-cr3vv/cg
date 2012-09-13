@@ -1,19 +1,18 @@
-include 'model.inc'
+include model.inc
 
-include 'lib\cga.inc'
-include 'lib\int10.inc'
-include 'lib\status.inc'
-include 'macro.inc'
+include lib\cga.inc
+include lib\int10.inc
+include lib\status.inc
+include macro.inc
 
 
 .data
 
-CGA_PIX_MASK: db 03fh, 0dfh, 0fdh, 0f3h
+CGA_PIX_MASK db 03fh, 0dfh, 0fdh, 0f3h
 
 .code
 
-CGA_InitVideo proc
-	bCGASubMode : byte 
+CGA_InitVideo proc bCGASubMode : byte 
 	
 	cmp bCGASubMode, CGA_SUBMODE_RG
 	jnz checkCm
@@ -34,7 +33,7 @@ mono:
 	cmp bCGASubMode, CGA_SUBMODE_BW
 	jnz noMode
 	
-	invoke Int10_SetVideoMode, VMODE_CGA_MONO
+	invoke Int10_SetVideoMode, VMODE_CGA_MONO_640
 	jmp ok
 	
 noMode:
@@ -46,18 +45,19 @@ ok:
 CGA_InitVideo endp
 
 
-CGA_ClearScreen proc
-	uses ax, es
+CGA_ClearScreen proc uses ax es
 	
 	mov ax, CGA_VMEM_SEG
 	mov es, ax
 	
 	mov di, CGA_VMEM_HALF_SIZE
 
+	xor ax, ax
+	
 loop1:
 	dec di
 	
-	mov es:[di], 0
+	mov es:[di], al
 
 	cmp di, 0
 	jnz loop1
@@ -68,7 +68,7 @@ loop1:
 loop2:
 	dec di
 	
-	mov es:[di], 0
+	mov es:[di], al
 
 	cmp di, 0
 	jnz loop2
@@ -77,12 +77,7 @@ loop2:
 	
 CGA_ClearScreen endp
 
-CGA_PutPixel proc 
-	wX : word,
-	wY : word,
-	bColor : byte
-	
-	uses ax, bx, di, si
+CGA_PutPixel proc uses ax bx cx di si wX : word, wY : word, bColor : byte
 	
 	mov ax, wY
 	
@@ -108,12 +103,17 @@ area2:
 	add di, ax
 	mov al, es:[di]
 	
-	mov si, offset CGA_PIX_MASK
+	mov si, word ptr CGA_PIX_MASK
 	add si, bx	
 	and al, [si]
 	
 	mov ah, bColor
-	shr ah, bx
+
+shift:
+	shr ah, 2
+	dec bx
+	jnz shift
+	
 	or al, ah
 	
 	mov es:[di], al
@@ -121,3 +121,5 @@ area2:
 	ret
 	
 CGA_PutPixel endp
+
+end

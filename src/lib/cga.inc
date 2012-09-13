@@ -21,13 +21,9 @@ CGA_RG_BROWN	equ		03h
 
 
 ; Initializares CGA video mode and returns error code
-CGA_InitVideo proto 
-	bCGASubMode : byte
+CGA_InitVideo proto bCGASubMode : byte
 
 CGA_ClearScreen proto
 
-CGA_PutPixel proto 
-	wX : word,
-	wY : word,
-	bColor : byte
+CGA_PutPixel proto wX : word, wY : word, bColor : byte
 	
