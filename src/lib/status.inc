@@ -1,0 +1,4 @@
+; status.inc
+
+STATUS_SUCCESS				equ		0000h
+STATUS_INVALID_ARGUMENT		equ		0001h
