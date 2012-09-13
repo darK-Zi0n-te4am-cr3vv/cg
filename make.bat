@@ -1,6 +1,6 @@
 @echo off
 
-set MASMFLAGS=/I. /nologo
+set MASMFLAGS=/I.\src\ /nologo
 set MASM=ml %MASMFLAGS%
 
 set LIB_FILES="LIB\cga.asm LIB\int10.asm LIB\kb.asm LIB\sys.asm"
@@ -16,4 +16,4 @@ goto %TARGET%
 
 :lib
 	
-	%MASM% /Fobin\lib.obj %LIB_FILES%
+	%MASM% /Fobin\obj\lib.obj %LIB_FILES%
