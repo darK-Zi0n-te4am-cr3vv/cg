@@ -7,7 +7,7 @@
 
 Для собрки необходим древний masm и DosBox (особенно, если у вас Windows 7) (например, здесь есть все сразу http://www.cs.ifmo.ru/~ad/Education_Information/System_Soft/Mod_7/Ass/lab1/asm_toolkit.rar).
 
-Для сборки необходимо настроить ваш DosBox, отредактировав файл конфигурации ({system drive}:\Users\{username}\AppData\Local\DOSBox\dosbox-{version}.conf, если 7).
+Для сборки необходимо настроить ваш DosBox, отредактировав файл конфигурации ({system drive}:\Users\{username}\AppData\Local\DOSBox\dosbox-{version}.conf).
 В секцию ``[autoexec]`` нужно добавить команду ``mount X X:\``, где ``X`` - диск, на который вы распаковали ваш masm.
 Так же полезно установить ``PATH`` командой ``set PATH=%PATH%;X:\path\to\masm\`` 
 что позволит легче проводить сборку проекта и ``DEFAULT_TASK_ID`` командой ``set DEFAULT_TASK_ID=##``, где ``##`` ваш номер варианта.
