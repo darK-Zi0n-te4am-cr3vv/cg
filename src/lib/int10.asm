@@ -26,5 +26,12 @@ Int10_SetVideoMode  proc uses ax bVMode : byte
 	
 Int10_SetVideoMode endp
 
+Int10_GetCurrentVideoMode  proc 
+	
+	mov ah, INT10_GET_CURRENT_VMODE	
+	INT10
+	
+Int10_GetCurrentVideoMode endp
+
 end
 

@@ -23,7 +23,7 @@ CGA_InitVideo proc bCGASubMode : byte
 	
 checkCm:
 	
-	cmp bCGASubMode, CGA_SUBMODE_RG
+	cmp bCGASubMode, CGA_SUBMODE_CM
 	jnz mono
 	
 	invoke Int10_SetVideoMode, VMODE_CGA_COLOR_320

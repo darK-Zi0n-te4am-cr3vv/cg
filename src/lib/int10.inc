@@ -16,3 +16,4 @@ VMODE_EGA_COLOR_640_350	equ		10h
 EGA_VMEM_SEG	equ		0A000h		
 
 Int10_SetVideoMode proto bVMode : byte 
+Int10_GetCurrentVideoMode  proto 

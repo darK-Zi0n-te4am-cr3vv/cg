@@ -1,3 +1,3 @@
-.386
+.186
 .model small, stdcall
 

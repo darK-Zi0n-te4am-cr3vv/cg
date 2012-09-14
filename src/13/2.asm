@@ -19,6 +19,12 @@ CGA_VMEM_SEG	equ		0B800h
 
 main:
 
+	; save vmode
+	mov	ah, 0fh
+	int	10h
+	
+	mov bl, al
+	
 	; init CGA color vmode
 	mov	ax, 04h
 	int	10h	
@@ -36,6 +42,11 @@ main:
 	mov ax, 00h
 	int	16h
 
+	; mode restore
+	mov al, bl
+	mov ah, 0h
+	int 10h
+	
 	; exit to dos
 	mov	ax, 4c00h		
 	int	21h				
