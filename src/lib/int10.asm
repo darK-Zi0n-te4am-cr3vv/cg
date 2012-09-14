@@ -1,4 +1,6 @@
 include model.inc
+include macro.inc
+
 include lib\int10.inc
 
 INT10 macro 
@@ -24,12 +26,15 @@ Int10_SetVideoMode  proc uses ax bVMode : byte
 	
 	INT10
 	
+	ret
+	
 Int10_SetVideoMode endp
 
 Int10_GetCurrentVideoMode  proc 
 	
 	mov ah, INT10_GET_CURRENT_VMODE	
 	INT10
+	RETURNW ax
 	
 Int10_GetCurrentVideoMode endp
 

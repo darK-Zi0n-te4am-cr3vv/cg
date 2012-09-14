@@ -28,7 +28,7 @@ DOS_Print proc uses ax dx wStringPtr : word
 	mov dx, wStringPtr
 	
 	INT21
-	
+	ret
 DOS_Print endp
 
 end

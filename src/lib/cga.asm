@@ -19,7 +19,7 @@ CGA_InitVideo proc bCGASubMode : byte
 	
 	; FIXME: add pallete changing
 	invoke Int10_SetVideoMode, VMODE_CGA_COLOR_320
-	jmp ok
+	RETURNW STATUS_SUCCESS
 	
 checkCm:
 	
@@ -27,32 +27,29 @@ checkCm:
 	jnz mono
 	
 	invoke Int10_SetVideoMode, VMODE_CGA_COLOR_320
-	jmp ok
+	RETURNW STATUS_SUCCESS
 	
 mono:
 	cmp bCGASubMode, CGA_SUBMODE_BW
 	jnz noMode
 	
 	invoke Int10_SetVideoMode, VMODE_CGA_MONO_640
-	jmp ok
+	RETURNW STATUS_SUCCESS
 	
 noMode:
-	RETURN_STATUS STATUS_INVALID_ARGUMENT
-	
-ok:
-	RETURN_STATUS STATUS_SUCCESS
+	RETURNW STATUS_INVALID_ARGUMENT
 	
 CGA_InitVideo endp
 
 
 CGA_ClearScreen proc uses ax es
 	
-	mov ax, CGA_VMEM_SEG
-	mov es, ax
+	LDSEG es, CGA_VMEM_SEG
 	
 	mov di, CGA_VMEM_HALF_SIZE
 
 	xor ax, ax
+	;mov ax, 5555h
 	
 loop1:
 	dec di
@@ -61,6 +58,7 @@ loop1:
 
 	cmp di, 0
 	jnz loop1
+	
 	
 	mov di, CGA_VMEM_HALF_SIZE
 	add di, CGA_VMEM_HALF_AREA
@@ -77,7 +75,9 @@ loop2:
 	
 CGA_ClearScreen endp
 
-CGA_PutPixel proc uses ax bx cx di si wX : word, wY : word, bColor : byte
+CGA_PutPixel proc uses ax bx cx di si es wX : word, wY : word, bColor : byte
+	
+	LDSEG es, CGA_VMEM_SEG
 	
 	mov ax, wY
 	
@@ -103,7 +103,7 @@ area2:
 	add di, ax
 	mov al, es:[di]
 	
-	mov si, word ptr CGA_PIX_MASK
+	mov si, offset CGA_PIX_MASK
 	add si, bx	
 	and al, [si]
 	

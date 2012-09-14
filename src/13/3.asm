@@ -25,24 +25,23 @@ FatalMessage db 'Fatal error, exiting$'
 Entry proc
 	local bOldMode :  byte
 
-	
-	
 	;invoke Int10_GetCurrentVideoMode
-	;mov bOldMode, al
+		; save vmode
+	mov	ah, 0fh
+	int	10h
+	
+	mov bOldMode, al
 	
 	invoke CGA_InitVideo, CGA_SUBMODE_CM
 	CHECK_STATUS fatal
 	
-	mov ax, CGA_VMEM_SEG
-	mov es, ax
+	invoke CGA_ClearScreen
 	
-	;invoke CGA_ClearScreen
-	
-	;invoke CGA_PutPixel, PX_X, PX_Y, PX_COLOR
+	invoke CGA_PutPixel, PX_X, PX_Y, PX_COLOR
 	
 	invoke KB_ReadKey
 	
-	;invoke Int10_SetVideoMode, 3
+	invoke Int10_SetVideoMode, bOldMode
 	invoke DOS_Exit, 0
 	
 fatal:

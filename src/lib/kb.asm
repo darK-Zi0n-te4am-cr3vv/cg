@@ -11,6 +11,7 @@ endm
 KB_Readkey proc
 	mov ax, KB_READ_KEY
 	INT16
+	ret
 KB_Readkey endp
 
 end
