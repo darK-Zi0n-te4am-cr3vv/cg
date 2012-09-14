@@ -17,7 +17,10 @@ goto %TARGET%
 :clean
 	del *.obj
 	del *.exe
+	del *.map
+	
 	goto Exit
+	
 	
 :lib
 	%MASM% %LIB%\cga.asm %LIB%\int10.asm %LIB%\kb.asm %LIB%\sys.asm

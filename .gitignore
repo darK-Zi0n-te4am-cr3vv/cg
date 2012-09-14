@@ -4,3 +4,5 @@
 *.obj
 CURRENT.STS
 CLRFILE.CV4
+*.MAP
+*.map
