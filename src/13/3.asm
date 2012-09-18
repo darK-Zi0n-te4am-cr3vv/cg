@@ -39,10 +39,17 @@ Entry proc
 	
 	invoke CGA_PutPixel, PX_X, PX_Y, PX_COLOR
 	
+	
+	invoke CGA_DrawLine, 2, 30, 10, 30, PX_COLOR
+	
+	
 	invoke KB_ReadKey
 	
 	invoke Int10_SetVideoMode, bOldMode
 	invoke DOS_Exit, 0
+	
+	
+	
 	
 fatal:
 	invoke DOS_Print, offset FatalMessage

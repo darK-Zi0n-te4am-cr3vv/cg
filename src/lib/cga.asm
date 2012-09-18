@@ -9,6 +9,12 @@ include macro.inc
 .data
 
 CGA_PIX_MASK db 03fh, 0dfh, 0fdh, 0f3h
+CGA_HOR_LINE_MASKS db 0ffh, 0c0h, 0f0h, 0fch
+CGA_HOR_LINE_PIX db 00h, 3fh, 0fh, 03h
+
+CGA_HOR_LINE_EMASKS db 0ffh, 03fh, 00fh, 03h
+CGA_HOR_LINE_EPIX db 00h, 0c0h, 0f0h, 0fch
+
 
 .code
 
@@ -121,5 +127,162 @@ shift:
 	ret
 	
 CGA_PutPixel endp
+
+ 
+CGA_DrawLineHorizontal proc uses bx cx di si sX : word, eX : word, Y : word, color : byte
+	
+	;
+	; we drawing line in 3 steps:
+	; begining, middle, ending
+	;
+	
+local nOffset : word
+local nStartByte : word
+local nEndByte : word
+	
+	; calculating color
+	
+	mov al, color
+	shl al, 2
+	or al, color
+	shl al, 2
+	or al, color
+	shl al, 2
+	or al, color
+	
+	mov color, al
+	
+	; calculating line offset
+	
+	mov ax, Y
+	mov bx, ax
+	
+	shr ax, 1
+	mov cx, CGA_LINE_SIZE
+	mul cx
+	
+	and bx, 1
+	jz upPage
+	add ax, CGA_VMEM_HALF_AREA
+	
+upPage:
+	mov nOffset, ax
+	
+	mov ax, eX
+	shr ax, 2
+	add ax, nOffset
+	mov nEndByte, ax
+	
+	mov ax, sX
+	mov bx, ax
+	
+	shr bx, 2
+	add bx, nOffset
+	mov nStartByte, bx
+	
+	and ax, 3h
+	jz noStarting
+	
+	mov si, offset CGA_HOR_LINE_MASKS
+	add si, ax
+	
+	mov bl, [si]
+	
+	mov di, nStartByte
+	
+	mov cl, es:[di]
+	and cl, bl
+	
+	mov si, offset CGA_HOR_LINE_PIX
+	add si, ax
+	
+	mov bl, [si]
+	and bl, color
+	
+	or cl, bl
+	
+	mov es:[di], cl
+	
+	inc nStartByte
+	
+noStarting:
+	
+	mov di, nStartByte
+	mov si, nEndByte
+	
+	mov al, color
+	
+	
+mdLineLoop:
+	cmp di, si
+	jge mdLineLoopEnd
+	
+	mov es:[di], al
+	inc di
+	
+	jmp mdLineLoop
+	
+mdLineLoopEnd:
+	
+ending:
+	mov ax, eX
+	and ax, 3h
+	jz noEnding
+	
+	mov si, offset CGA_HOR_LINE_EMASKS
+	add si, ax
+	
+	mov bl, [si]
+	
+	mov di, nEndByte
+	
+	mov cl, es:[di]
+	and cl, bl
+	
+	mov si, offset CGA_HOR_LINE_EPIX
+	add si, ax
+	
+	mov bl, [si]
+	and bl, color
+	
+	or cl, bl
+	
+	mov es:[di], cl
+	
+
+noEnding:
+
+	ret
+	
+CGA_DrawLineHorizontal endp
+
+
+CGA_DrawLine proc uses es bx cx sX : word, sY : word, eX : word, eY : word, color : byte
+	
+	LDSEG es, CGA_VMEM_SEG
+	
+	mov ax, sY
+	cmp ax, eY
+	jz horizontalLine
+	
+	mov ax, sX
+	cmp ax, eX
+	jz verticalLine
+	
+	jmp genericLine
+	
+horizontalLine:
+	
+	invoke CGA_DrawLineHorizontal, sX, eX, sY, color
+	RETURNW STATUS_SUCCESS
+	
+verticalLine:
+	
+	;RETURNW STATUS_SUCCESS
+
+genericLine: 
+	RETURNW STATUS_NOT_IMPLEMENTED
+
+CGA_DrawLine endp
 
 end
