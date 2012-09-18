@@ -10,8 +10,8 @@ include lib\int10.inc
 ; точки с координатами x = 113, y = 98, синего цвета. Значения
 ; координат можно задавать непосредственно в тексте программы.
 
-PX_X		equ		113
-PX_Y		equ		98
+PX_X		equ		0
+PX_Y		equ		0
 
 PX_COLOR	equ		CGA_CM_CYAN
 
@@ -38,9 +38,12 @@ Entry proc
 	invoke CGA_ClearScreen
 	
 	invoke CGA_PutPixel, PX_X, PX_Y, PX_COLOR
+	invoke CGA_PutPixel, PX_X + 2, PX_Y, PX_COLOR
+	invoke CGA_PutPixel, PX_X + 1, PX_Y + 1, PX_COLOR
+	invoke CGA_PutPixel, PX_X + 3, PX_Y + 2, PX_COLOR
 	
 	
-	invoke CGA_DrawLine, 2, 30, 10, 30, PX_COLOR
+	invoke CGA_DrawLine, 0, 30, 3, 30, PX_COLOR
 	
 	
 	invoke KB_ReadKey

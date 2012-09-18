@@ -6,7 +6,7 @@ set LIB=.\lib
 set MASMFLAGS=/I%SRC% /nologo /Zi /c
 set MASM=ml %MASMFLAGS%
 
-set LINKFLAGS=/CO
+set LINKFLAGS=/CO /BATCH
 set LINK=link %LINKFLAGS%
 
 
@@ -33,10 +33,10 @@ goto %TARGET%
 	if "%TASK_ID%" == "" goto ErrorNoDefaultTaskId
 	
 	%MASM% %SRC%\%TASK_ID%\2.asm
-	%LINK% 2.obj cga.obj int10.obj kb.obj sys.obj
+	%LINK% @2.lnk
 	
 	%MASM% %SRC%\%TASK_ID%\3.asm
-	%LINK% 3.obj cga.obj int10.obj kb.obj sys.obj
+	%LINK% @3.lnk
 	
 	
 	goto Exit

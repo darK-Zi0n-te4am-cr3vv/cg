@@ -81,7 +81,7 @@ loop2:
 	
 CGA_ClearScreen endp
 
-CGA_PutPixel proc uses ax bx cx di si es wX : word, wY : word, bColor : byte
+CGA_PutPixel proc uses ax bx cx dx di si es wX : word, wY : word, bColor : byte
 	
 	LDSEG es, CGA_VMEM_SEG
 	
@@ -116,9 +116,10 @@ area2:
 	mov ah, bColor
 
 shift:
-	shr ah, 2
-	dec bx
-	jnz shift
+	shl ah, 2
+	inc bx
+	cmp bx, 3
+	jl shift
 	
 	or al, ah
 	
@@ -139,6 +140,16 @@ CGA_DrawLineHorizontal proc uses bx cx di si sX : word, eX : word, Y : word, col
 local nOffset : word
 local nStartByte : word
 local nEndByte : word
+	
+	mov ax, sX
+	mov bx, eX
+	cmp ax, bx
+	jle noSwap
+
+	mov sX, bx
+	mov eX, ax
+	
+noSwap:
 	
 	; calculating color
 	
@@ -179,6 +190,9 @@ upPage:
 	shr bx, 2
 	add bx, nOffset
 	mov nStartByte, bx
+	
+	cmp nEndByte, bx
+	jz oneByteLine
 	
 	and ax, 3h
 	jz noStarting
@@ -251,6 +265,22 @@ ending:
 	
 
 noEnding:
+
+	ret
+
+oneByteLine:
+
+	mov si, sX
+	mov bx, eX
+	mov cl, color
+	and cx, 3
+	mov dx, Y
+	
+lineLoop:
+	invoke CGA_PutPixel, si, dx, cl
+	inc si
+	cmp si, bx
+	jle lineLoop
 
 	ret
 	
