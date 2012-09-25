@@ -141,6 +141,9 @@ local nOffset : word
 local nStartByte : word
 local nEndByte : word
 	
+	; dirty hack
+	inc eX
+	
 	mov ax, sX
 	mov bx, eX
 	cmp ax, bx
