@@ -42,7 +42,10 @@ goto %TARGET%
 	
 	%MASM% %SRC%\%TASK_ID%\4.asm
 	%LINK% @4.lnk
-	
+
+	%MASM% %SRC%\%TASK_ID%\5.asm
+	%LINK% @5.lnk
+
 	goto Exit
 	
 :ErrorNoDefaultTaskId

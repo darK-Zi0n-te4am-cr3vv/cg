@@ -8,7 +8,10 @@ include macro.inc
 
 .data
 
-CGA_PIX_MASK db 03fh, 0dfh, 0fdh, 0f3h
+CGA_PIX_MASK db 03fh, 0cfh, 0f3h, 0fch
+CGA_PIX_CMASK db 0c0h, 030h, 00ch, 003h
+
+
 CGA_HOR_LINE_MASKS db 0ffh, 0c0h, 0f0h, 0fch
 CGA_HOR_LINE_PIX db 00h, 3fh, 0fh, 03h
 
@@ -290,6 +293,116 @@ lineLoop:
 CGA_DrawLineHorizontal endp
 
 
+CGA_DrawLineVertical proc uses bx cx di si X : word, sY : word, eY : word, color : byte
+
+	
+local pmask : byte
+local cmask : byte
+
+	mov ax, sY
+	mov bx, eY
+	cmp ax, bx
+	
+	jle noSwap
+
+	mov sY, bx
+	mov eY, ax
+	
+noSwap:
+
+	; initializaring color
+	
+	mov al, color
+	shl al, 2
+	or al, color
+	shl al, 2
+	or al, color
+	shl al, 2
+	or al, color
+	mov color, al
+
+	
+	; initializaring masks
+	
+	mov si, X
+	and si, 3
+	
+	add si, offset CGA_PIX_MASK 
+	mov al, ds:[si]
+	mov pmask, al
+	
+	mov si, X
+	and si, 3
+	
+	add si, offset CGA_PIX_CMASK 
+	mov al, ds:[si]
+	mov cmask, al
+	
+	; calculating offset
+	
+	mov ax, sY
+	mov bx, 050h
+	mul bx
+	
+	mov bx, X
+	shr bx, 2
+	add ax, bx
+	
+	mov di, ax
+	mov si, ax
+	add di, 02000h
+	
+	mov ax, sY
+	
+	; now just drawing
+
+	mov cl, pmask
+	mov ch, cmask
+	
+	mov dl, color
+	
+drawLoop:
+	
+	test ax, 1
+	jnz upPage
+	
+	mov dh, es:[si]
+	and dh, cl
+	mov bl, dl
+	and bl, ch
+	or bl, dh
+	mov es:[si], bl
+	add si, 050h
+	
+	jmp loopCond
+	
+upPage:
+
+	mov dh, es:[di]
+	and dh, cl
+	mov bl, dl
+	and bl, ch
+	or bl, dh
+	mov es:[di], bl
+	add di, 050h
+
+loopCond:
+	
+	inc ax
+	cmp ax, eY
+	jg drawLoopEnd
+	jmp drawLoop
+
+	
+	
+drawLoopEnd:
+	
+	ret
+	
+CGA_DrawLineVertical endp
+
+
+
 CGA_DrawLine proc uses es bx cx sX : word, sY : word, eX : word, eY : word, color : byte
 	
 	LDSEG es, CGA_VMEM_SEG
@@ -311,7 +424,8 @@ horizontalLine:
 	
 verticalLine:
 	
-	;RETURNW STATUS_SUCCESS
+	invoke CGA_DrawLineVertical, sX, sY, eY, color
+	RETURNW STATUS_SUCCESS
 
 genericLine: 
 	RETURNW STATUS_NOT_IMPLEMENTED
