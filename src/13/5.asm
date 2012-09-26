@@ -12,7 +12,7 @@ include lib\sys.inc
 include lib\kb.inc
 include lib\int10.inc
 
-LINE_COLOR			equ		CGA_CM_CYAN
+LINE_COLOR			equ		CGA_CM_MAGENTA
 
 .data
 FatalMessage db 'Fatal error, exiting$'
@@ -32,7 +32,7 @@ Entry proc
 	
 	invoke CGA_ClearScreen
 	
-	invoke CGA_DrawLine, 10, 0, 10, 198, LINE_COLOR
+	invoke CGA_DrawLine, 10, 89, 10, 34, LINE_COLOR
 	CHECK_STATUS fatal
 	
 	
