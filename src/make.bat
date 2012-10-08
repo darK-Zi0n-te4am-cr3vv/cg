@@ -26,6 +26,13 @@ goto %TARGET%
 :lib
 	%MASM% %LIB%\cga.asm %LIB%\int10.asm %LIB%\kb.asm %LIB%\sys.asm
 	goto Exit
+	
+:subtask
+	if not exist %2 goto Exit
+	%MASM% %2
+	%LINK% %3
+	
+	goto Exit
 
 :task
 	set TASK_ID=%2
@@ -34,18 +41,11 @@ goto %TARGET%
 	
 	call make lib
 	
-	%MASM% %SRC%\%TASK_ID%\2.asm
-	%LINK% @2.lnk
+	call make subtask %SRC%\%TASK_ID%\2.asm @2.lnk
+	call make subtask %SRC%\%TASK_ID%\3.asm @2.lnk
+	call make subtask %SRC%\%TASK_ID%\4.asm @2.lnk
+	call make subtask %SRC%\%TASK_ID%\5.asm @2.lnk
 	
-	%MASM% %SRC%\%TASK_ID%\3.asm
-	%LINK% @3.lnk
-	
-	%MASM% %SRC%\%TASK_ID%\4.asm
-	%LINK% @4.lnk
-
-	%MASM% %SRC%\%TASK_ID%\5.asm
-	%LINK% @5.lnk
-
 	goto Exit
 	
 :ErrorNoDefaultTaskId
