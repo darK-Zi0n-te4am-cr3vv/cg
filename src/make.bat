@@ -42,9 +42,9 @@ goto %TARGET%
 	call make lib
 	
 	call make subtask %SRC%\%TASK_ID%\2.asm @2.lnk
-	call make subtask %SRC%\%TASK_ID%\3.asm @2.lnk
-	call make subtask %SRC%\%TASK_ID%\4.asm @2.lnk
-	call make subtask %SRC%\%TASK_ID%\5.asm @2.lnk
+	call make subtask %SRC%\%TASK_ID%\3.asm @3.lnk
+	call make subtask %SRC%\%TASK_ID%\4.asm @4.lnk
+	call make subtask %SRC%\%TASK_ID%\5.asm @5.lnk
 	
 	goto Exit
 	
