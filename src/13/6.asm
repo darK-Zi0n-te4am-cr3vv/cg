@@ -1,8 +1,7 @@
-; lab 1.5
+; lab 1.6
 ; (c) C.c 2012
 
-; Разработать программу построения вертикальной линии произвольного раз-
-; мера.
+;  Draw a complex object
 
 include model.inc
 include macro.inc
@@ -32,7 +31,7 @@ Entry proc
 	
 	invoke CGA_ClearScreen
 	
-	invoke CGA_DrawLine, 10, 89, 10, 34, LINE_COLOR
+	invoke CGA_DrawLine, 10, 34, 40, 123, LINE_COLOR
 	CHECK_STATUS fatal
 	
 	
@@ -44,6 +43,9 @@ Entry proc
 	RETURNB EXIT_SUCCESS
 	
 fatal:
+	; restore vmode
+	invoke Int10_SetVideoMode, bOldMode
+
 	invoke DOS_Print, offset FatalMessage
 	RETURNB EXIT_FAILURE
 	

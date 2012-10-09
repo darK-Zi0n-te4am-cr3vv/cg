@@ -1,0 +1,5 @@
+6.obj cga.obj int10.obj kb.obj sys.obj
+"6.exe"
+NUL
+
+

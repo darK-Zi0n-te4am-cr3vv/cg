@@ -402,6 +402,126 @@ drawLoopEnd:
 CGA_DrawLineVertical endp
 
 
+; Bresenham's line algorithm implementation
+CGA_DrawLineGeneric proc uses bx cx di si x1 : word, y1 : word, x2 : word, y2 : word, color : byte
+	
+	local deltaX : word
+	local deltaY : word
+	local signX : word
+	local signY : word
+	local xerror : word
+	local xerror2 : word
+	
+	; deltaX = abs(x2 - x1);
+	; signX = x1 < x2 ? 1 : -1;
+	
+    mov ax, x2
+	xor bx, bx
+	sub ax, x1
+	adc bx, 00h
+	shl bx, 1
+	mov cx, 01h
+	sub cx, bx
+	
+	mov signX, cx
+	
+	; abs
+	mov bx, ax
+	sar bx, 15
+	add ax, bx
+	xor ax, bx
+	
+	mov deltaX, ax
+	
+	; deltaY = abs(y2 - y1);
+	; signY = y1 < y2 ? 1 : -1;
+    
+	mov ax, y2
+	xor bx, bx
+	sub ax, y1
+	adc bx, 00h
+	shl bx, 1
+	mov cx, 01h
+	sub cx, bx
+	
+	mov signY, cx
+	
+	; abs
+	mov bx, ax
+	sar bx, 15
+	add ax, bx
+	xor ax, bx
+	
+	mov deltaY, ax
+	
+	; xerror = deltaX - deltaY;
+	mov ax, deltaX
+	sub ax, deltaY
+	mov xerror, ax
+	
+	; setPixel(x2, y2);
+	invoke CGA_PutPixel, x2, y2, color
+	
+	; here we just invert deltaY, because it always used with -
+	xor ax, ax
+	sub ax, deltaY
+	mov deltaY, ax
+	
+	; while(x1 != x2 || y1 != y2) {
+xloop:
+	mov ax, x1
+	cmp ax, x2
+	jnz xLoopBody
+	mov bx, y1
+	cmp bx, y2
+	jnz xLoopBody
+	
+	jmp xLoopEnd
+	
+xLoopBody:
+
+	; setPixel(x1, y1);
+	invoke CGA_PutPixel, x1, y1, color
+	
+	; xerror2 = error * 2;
+	mov ax, xerror
+	shl ax, 2
+	mov xerror2, ax
+	
+	; if(error2 > -deltaY) {
+	mov ax, deltaY
+	cmp xerror2, ax
+	jle xCheckDeltaX
+	
+	; error -= deltaY;
+	add xerror, ax
+	
+	; x1 += signX;
+	mov ax, signX
+	add x1, ax
+	
+xCheckDeltaX:
+
+	; if(error2 < deltaX) {
+	mov ax, deltaX
+	cmp xerror2, ax
+	jge xLoopContinue
+	
+	; error += deltaX;
+	add xerror, ax
+	
+	; y1 += signY;
+	mov ax, signY
+	add y1, ax
+        
+xLoopContinue:
+	jmp xLoop
+	
+xLoopEnd:
+	ret
+CGA_DrawLineGeneric endp
+
+
 
 CGA_DrawLine proc uses es bx cx sX : word, sY : word, eX : word, eY : word, color : byte
 	
@@ -428,7 +548,8 @@ verticalLine:
 	RETURNW STATUS_SUCCESS
 
 genericLine: 
-	RETURNW STATUS_NOT_IMPLEMENTED
+	invoke CGA_DrawLineGeneric, sX, sY, eX, eY, color
+	RETURNW STATUS_SUCCESS
 
 CGA_DrawLine endp
 
