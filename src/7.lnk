@@ -1,0 +1,5 @@
+7.obj cga.obj int10.obj kb.obj sys.obj
+"7.exe"
+NUL
+
+

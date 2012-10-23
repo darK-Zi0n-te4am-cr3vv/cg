@@ -34,4 +34,4 @@ CGA_ClearScreen proto
 
 CGA_PutPixel proto wX : word, wY : word, bColor : byte
 CGA_DrawLine proto sX : word, sY : word, eX : word, eY : word, color : byte
-	
+CGA_DrawCircle proto xCenter : word, yCenter : word, radius : word, color : byte

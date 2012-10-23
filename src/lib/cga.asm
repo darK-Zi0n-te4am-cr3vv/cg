@@ -553,4 +553,117 @@ genericLine:
 
 CGA_DrawLine endp
 
+
+; helper function
+CGA_PlotCirclePoints proc uses cx bx x : word, y : word, xCenter : word, yCenter : word, color : byte
+
+	; mempoint(x_center+x,y_center+y,color_code);
+	mov cx, xCenter
+	add cx, x
+	mov bx, yCenter
+	add bx, y
+	invoke CGA_PutPixel, cx, bx, color
+	
+	;mempoint(x_center+x,y_center-y,color_code);
+	mov cx, xCenter
+	add cx, x
+	mov bx, yCenter
+	sub bx, y
+	invoke CGA_PutPixel, cx, bx, color
+	
+    ;mempoint(x_center-x,y_center+y,color_code);
+	mov cx, xCenter
+	sub cx, x
+	mov bx, yCenter
+	add bx, y
+	invoke CGA_PutPixel, cx, bx, color
+	
+    ;mempoint(x_center-x,y_center-y,color_code);
+	mov cx, xCenter
+	sub cx, x
+	mov bx, yCenter
+	sub bx, y
+	invoke CGA_PutPixel, cx, bx, color
+	
+	ret
+CGA_PlotCirclePoints endp
+
+
+
+
+; Bresenham's circle algorithm implementation
+CGA_DrawCircle proc uses ax bx dx xCenter : word, yCenter : word, radius : word, color : byte
+
+	local x : word
+	local y : word
+	local delta : word
+	local RR : word
+	
+	
+    ;x = 0;
+    mov x, 0
+	
+	;y = radius;
+	mov ax, radius
+	mov y, ax
+	
+	; RR = radius*radius;
+	mov ax, radius
+	mul ax
+	mov RR, ax
+	
+	;while(x<y) {
+xLoopBegin:
+	mov ax, x
+	cmp ax, y
+	jge xLoopEnd
+	
+xLoopBody:
+	;plot_circle(x,y,x_center,y_center,color_code);
+	invoke CGA_PlotCirclePoints, x, y, xCenter, yCenter, color
+	
+	;plot_circle(y,x,x_center,y_center,color_code);
+	invoke CGA_PlotCirclePoints, y, x, xCenter, yCenter, color
+	
+	; check
+	; if (RR - x*x > y*y - y) y--; 
+	
+	mov ax, x
+	mul ax
+	mov bx, RR
+	sub bx, ax
+	
+	mov ax, y
+	mul ax
+	sub ax, y
+    
+	cmp bx, ax
+	jge xNoYDec
+	
+	dec y
+	
+xNoYDec:
+	
+	;x++;
+	inc x
+    
+xLoopContinue:
+	jmp xLoopBegin
+	
+	;}
+xLoopEnd:
+
+    ;if(x==y) plot_circle(x,y,x_center,y_center,color_code);
+	mov ax, x
+	cmp ax, y
+	jne xProcRet
+	
+	invoke CGA_PlotCirclePoints, x, y, xCenter, yCenter, color
+	
+xProcRet:
+	ret
+	
+CGA_DrawCircle endp
+
+
 end

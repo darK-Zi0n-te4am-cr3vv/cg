@@ -46,6 +46,7 @@ goto %TARGET%
 	call make subtask %SRC%\%TASK_ID%\4.asm @4.lnk
 	call make subtask %SRC%\%TASK_ID%\5.asm @5.lnk
 	call make subtask %SRC%\%TASK_ID%\6.asm @6.lnk
+	call make subtask %SRC%\%TASK_ID%\7.asm @7.lnk
 	
 	goto Exit
 	
