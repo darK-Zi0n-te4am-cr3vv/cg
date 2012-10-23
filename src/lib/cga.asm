@@ -8,8 +8,8 @@ include macro.inc
 
 .data
 
-CGA_PIX_MASK db 03fh, 0cfh, 0f3h, 0fch
-CGA_PIX_CMASK db 0c0h, 030h, 00ch, 003h
+CGA_PIX_MASK db 00111111b, 11001111b, 11110011b, 11111100b
+CGA_PIX_CMASK db 11000000b, 00110000b, 00001100b, 00000011b
 
 
 CGA_HOR_LINE_MASKS db 0ffh, 0c0h, 0f0h, 0fch
@@ -98,6 +98,7 @@ CGA_PutPixel proc uses ax bx cx dx di si es wX : word, wY : word, bColor : byte
 	
 area2:
 	
+	; drawing
 	shr ax, 1
 	
 	mov bx, 320
@@ -111,18 +112,18 @@ area2:
 	
 	add di, ax
 	mov al, es:[di]
+	; al is old vmem byte
 	
 	mov si, offset CGA_PIX_MASK
 	add si, bx	
 	and al, [si]
 	
+	; calculating color
+	mov cl, 3
+	sub cl, bl
 	mov ah, bColor
-
-shift:
-	shl ah, 2
-	inc bx
-	cmp bx, 3
-	jl shift
+	shl cl, 1
+	shl ah, cl
 	
 	or al, ah
 	
@@ -638,7 +639,7 @@ xLoopBody:
 	sub ax, y
     
 	cmp bx, ax
-	jge xNoYDec
+	jg xNoYDec
 	
 	dec y
 	
