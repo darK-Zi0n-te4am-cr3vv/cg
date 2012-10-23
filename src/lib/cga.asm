@@ -592,21 +592,27 @@ CGA_PlotCirclePoints endp
 
 
 
-; Bresenham's circle algorithm implementation
+; non-Bresenham's circle algorithm implementation
 CGA_DrawCircle proc uses ax bx dx xCenter : word, yCenter : word, radius : word, color : byte
 
 	local x : word
 	local y : word
-	local delta : word
-	local RR : word
 	
+	local RR : word ; r^2
+	local XX : word ; x^2
+	local YY : word ; y^2
 	
     ;x = 0;
+	;XX = 0;
     mov x, 0
+	mov XX, 0
 	
 	;y = radius;
+	;YY = y*y;
 	mov ax, radius
 	mov y, ax
+	mul ax
+	mov YY, ax
 	
 	; RR = radius*radius;
 	mov ax, radius
@@ -629,25 +635,42 @@ xLoopBody:
 	; check
 	; if (RR - x*x > y*y - y) y--; 
 	
-	mov ax, x
-	mul ax
+	mov ax, XX
 	mov bx, RR
 	sub bx, ax
 	
-	mov ax, y
-	mul ax
+	mov ax, YY
 	sub ax, y
     
 	cmp bx, ax
 	jg xNoYDec
 	
-	dec y
+	; (y-1)^2 - y = y^2 - 2y + 1
+	; y--
+	
+	mov ax, YY
+	mov bx, y
+	inc ax
+	sub ax, bx
+	sub ax, bx
+	
+	dec bx
+	mov y, bx
+	mov YY, ax
+	
 	
 xNoYDec:
 	
 	;x++;
-	inc x
-    
+	mov ax, XX
+	mov bx, x
+	add ax, bx
+	add ax, bx
+	inc ax
+	inc bx
+	mov x, bx
+	mov XX, ax
+	
 xLoopContinue:
 	jmp xLoopBegin
 	
