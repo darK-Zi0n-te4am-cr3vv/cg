@@ -40,7 +40,7 @@ Entry proc
 	
 xfill:
 	
-	;invoke CGA_FloodFill, 40, 30, CGA_CM_CYAN
+	invoke CGA_FloodFill, 175, 120, CGA_CM_CYAN
 	
 	invoke KB_ReadKey
 	

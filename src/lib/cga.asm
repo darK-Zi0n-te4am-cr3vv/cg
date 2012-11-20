@@ -146,6 +146,28 @@ CGA_PutPixel proc uses ax bx cx dx di si es wX : word, wY : word, bColor : byte
 	
 CGA_PutPixel endp
 
+CGA_GetPixel proc uses bx cx  x:word, y:word
+
+	LDSEG es, CGA_VMEM_SEG
+	
+	invoke CGA_GetPixelOffset, x, y
+	
+	mov bx, x
+	and bx, 3
+	
+	mov al, es:[di]
+	; al is old vmem byte
+	
+	mov cx, 3
+	sub cx, bx
+	shl cx, 1
+	shr al, cl
+	
+	and al, 3
+	
+	ret
+
+CGA_GetPixel endp
  
 CGA_DrawLineHorizontal proc uses bx cx di si sX : word, eX : word, Y : word, color : byte
 	
@@ -702,5 +724,71 @@ xProcRet:
 	
 CGA_DrawCircle endp
 
+
+;; ANTOXA CODE 
+
+push_point macro x, y, count
+	push x
+	push y
+	inc count
+endm
+
+pop_point macro x, y, count
+	pop y
+	pop x
+	dec count
+endm
+
+_fill_2 proc near c uses ax, 
+	x:word, y:word, color:byte
+	local count:word
+
+	mov count, 0
+	push_point x, y, count
+_fill_2_loop:
+	pop_point x, y, count
+	invoke CGA_PutPixel, x, y, color
+	inc x				
+	invoke CGA_GetPixel, x, y
+	cmp ax, 0			; if (read_point(x+1,y) == 0) ...
+	jne _fill_2_cont_1
+	push_point x, y, count
+_fill_2_cont_1:
+	dec x
+	inc y
+	invoke CGA_GetPixel, x, y
+	cmp ax, 0			; if (read_point(x, y+1) == 0) ...
+	jne _fill_2_cont_2
+	push_point x, y, count
+_fill_2_cont_2:
+	dec y
+	dec x
+	invoke CGA_GetPixel, x, y
+	cmp ax, 0			; if (read_point(x-1, y) == 0) ...
+	jne _fill_2_cont_3
+	push_point x, y, count
+_fill_2_cont_3:
+	inc x
+	dec y
+	invoke CGA_GetPixel, x, y
+	cmp ax, 0			; if (read_point(x, y-1) == 0) ...
+	jne _fill_2_cont_4
+	push_point x, y, count
+_fill_2_cont_4:
+	;cmp count, 27 
+	;jge _fill_2_ret
+	cmp count, 0
+	jne _fill_2_loop
+_fill_2_ret:
+	ret
+_fill_2 endp
+
+
+CGA_FloodFill proc x: word, y:word, color:byte
+	
+	invoke _fill_2, x, y, color
+	ret
+
+CGA_FloodFill endp
 
 end
