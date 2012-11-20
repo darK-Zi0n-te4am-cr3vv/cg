@@ -16,7 +16,7 @@ LINE_COLOR			equ		CGA_CM_MAGENTA
 .data
 FatalMessage db 'Fatal error, exiting$'
 
-.stack 256
+.stack 40960
 
 .code
 
@@ -37,6 +37,10 @@ Entry proc
 	invoke CGA_DrawCircle, 160, 120, 35, LINE_COLOR
 	invoke CGA_DrawCircle, 145, 120, 10, LINE_COLOR
 	invoke CGA_DrawCircle, 175, 120, 10, LINE_COLOR
+	
+xfill:
+	
+	;invoke CGA_FloodFill, 40, 30, CGA_CM_CYAN
 	
 	invoke KB_ReadKey
 	

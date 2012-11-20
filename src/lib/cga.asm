@@ -84,10 +84,9 @@ loop2:
 	
 CGA_ClearScreen endp
 
-CGA_PutPixel proc uses ax bx cx dx di si es wX : word, wY : word, bColor : byte
+CGA_GetPixelOffset proc uses ax bx  wX : word, wY : word
 	
-	LDSEG es, CGA_VMEM_SEG
-	
+	xor di, di
 	mov ax, wY
 	
 	mov bx, ax
@@ -111,6 +110,20 @@ area2:
 	and bx, 03h
 	
 	add di, ax
+	
+	ret
+	
+CGA_GetPixelOffset endp
+
+CGA_PutPixel proc uses ax bx cx dx di si es wX : word, wY : word, bColor : byte
+	
+	LDSEG es, CGA_VMEM_SEG
+	
+	invoke CGA_GetPixelOffset, wX, wY
+	
+	mov bx, Wx
+	and bx, 3
+	
 	mov al, es:[di]
 	; al is old vmem byte
 	
